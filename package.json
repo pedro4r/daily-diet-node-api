@@ -4,13 +4,17 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "tsx watch src/server.ts",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "knex": "node --no-warnings --loader tsx ./node_modules/knex/bin/cli.js",
+    "lint": "eslint src --ext .ts --fix"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@rocketseat/eslint-config": "^2.1.0",
+    "@types/bcrypt": "^5.0.2",
     "@types/node": "^20.8.6",
     "@types/supertest": "^2.0.16",
     "eslint": "^8.51.0",
@@ -22,6 +26,7 @@
   },
   "dependencies": {
     "@fastify/cookie": "^9.2.0",
+    "bcrypt": "^5.1.1",
     "dotenv": "^16.3.1",
     "fastify": "^4.24.1",
     "knex": "^3.0.1",
