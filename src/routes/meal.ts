@@ -35,4 +35,18 @@ export async function MealRoutes(app: FastifyInstance) {
             return reply.status(201).send()
         }
     )
+
+    app.get(
+        '/',
+        {
+            preHandler: [checkSessionIdExists],
+        },
+        async (request) => {
+            const { sessionId } = request.cookies
+            const meals = await knex('meals')
+                .where('user_id', sessionId)
+                .select()
+            return { meals }
+        }
+    )
 }
