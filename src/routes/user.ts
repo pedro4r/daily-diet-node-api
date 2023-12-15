@@ -8,14 +8,12 @@ import bcrypt from 'bcrypt'
 export async function UserRoutes(app: FastifyInstance) {
     app.post('/', async (request, reply) => {
         // {title, amount, type: credit of debit}
-        const createTransactionBodySchema = z.object({
+        const createUserBodySchema = z.object({
             email: z.string(),
             password: z.string(),
         })
 
-        const { email, password } = createTransactionBodySchema.parse(
-            request.body
-        )
+        const { email, password } = createUserBodySchema.parse(request.body)
         const userId = randomUUID()
         let sessionId = request.cookies.sessionId
 
@@ -43,13 +41,11 @@ export async function UserRoutes(app: FastifyInstance) {
 
     app.post('/login', async (request, reply) => {
         // {title, amount, type: credit of debit}
-        const createTransactionBodySchema = z.object({
+        const createUserBodySchema = z.object({
             email: z.string(),
             password: z.string(),
         })
-        const { email, password } = createTransactionBodySchema.parse(
-            request.body
-        )
+        const { email, password } = createUserBodySchema.parse(request.body)
 
         const user = await knex('users').where({ email }).first()
 
@@ -73,10 +69,8 @@ export async function UserRoutes(app: FastifyInstance) {
         },
         async (request) => {
             const { sessionId } = request.cookies
-            const transactions = await knex('users')
-                .where('id', sessionId)
-                .select()
-            return { transactions }
+            const response = await knex('users').where('id', sessionId).select()
+            return { response }
         }
     )
 }
