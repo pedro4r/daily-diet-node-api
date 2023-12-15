@@ -49,4 +49,45 @@ export async function MealRoutes(app: FastifyInstance) {
             return { meals }
         }
     )
+
+    app.patch(
+        '/:id',
+        {
+            preHandler: [checkSessionIdExists],
+        },
+
+        async (request, reply) => {
+            const getMealParamsSchema = z.object({
+                id: z.string().uuid(),
+            })
+
+            const updateMealBodySchema = z.object({
+                name: z.string(),
+                description: z.string(),
+                insideDiet: z.boolean(),
+            })
+            const { id } = getMealParamsSchema.parse(request.params)
+            const { name, description, insideDiet } =
+                updateMealBodySchema.parse(request.body)
+
+            const { sessionId } = request.cookies
+
+            const updatedRows = await knex('meals')
+                .where({
+                    id,
+                    user_id: sessionId,
+                })
+                .update({
+                    name,
+                    description,
+                    inside_diet: insideDiet,
+                })
+
+            if (updatedRows > 0) {
+                return reply.status(200).send('Meal updated successfully')
+            } else {
+                return reply.status(404).send('Meal not found or unauthorized')
+            }
+        }
+    )
 }
