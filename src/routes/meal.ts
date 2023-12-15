@@ -90,4 +90,33 @@ export async function MealRoutes(app: FastifyInstance) {
             }
         }
     )
+
+    app.delete(
+        '/:id',
+        {
+            preHandler: [checkSessionIdExists],
+        },
+
+        async (request, reply) => {
+            const getMealParamsSchema = z.object({
+                id: z.string().uuid(),
+            })
+
+            const { id } = getMealParamsSchema.parse(request.params)
+            const { sessionId } = request.cookies
+
+            const deletedRows = await knex('meals')
+                .where({
+                    id,
+                    user_id: sessionId,
+                })
+                .del()
+
+            if (deletedRows > 0) {
+                return reply.status(200).send('Meal deleted successfully')
+            } else {
+                return reply.status(404).send('Meal not found or unauthorized')
+            }
+        }
+    )
 }
